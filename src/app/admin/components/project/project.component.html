@@ -1,0 +1,53 @@
+<div class="card projectcard mb-2">
+  <div class="card-header">
+    <div class="row">
+      <div class="col">
+        <span
+          [ngClass]="
+            +currentProject.projectID % 2 === 0 ? 'text-danger' : 'text-success'
+          "
+          >{{ currentProject.projectID }}
+        </span>
+        <h4>{{ currentProject.projectName }}</h4>
+      </div>
+      <div class="col text-end">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table" [hidden]="hideDetails">
+      <tbody>
+        <tr>
+          <td>Date Of Start</td>
+          <td>{{ currentProject.dateOfStart }}</td>
+        </tr>
+        <tr>
+          <td>Team Size</td>
+          <td>{{ currentProject.teamSize }}</td>
+        </tr>
+        <tr>
+          <td>Client Location</td>
+          <td>{{ currentProject.clientLocation.clientLocationName }}</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>{{ currentProject.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-warning" (click)="onDeleteClcik(index)">
+      Delete
+    </button>
+    <button class="btn btn-info ms-2" (click)="onEditClick(index)">Edit</button>
+    <a
+      href="#"
+      class="btn btn-primary ms-2"
+      onclick="return false"
+      [routerLink]="['/admin', 'projects', 'view', currentProject.projectID]"
+      >Learn More</a
+    >
+  </div>
+</div>

@@ -1,0 +1,365 @@
+<div class="modal-body">
+  <div class="my-1 text-end">
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="onCloseClicked()"
+    ></button>
+  </div>
+  <form class="px-4" [formGroup]="signupForm" (ngSubmit)="onSubmitClick()">
+    <h4 class="text-center mb-4">Sign Up</h4>
+    <div class="form-group row mb-4" formGroupName="personName">
+      <div class="col ps-0">
+        <input
+          type="text"
+          name="firstName"
+          id="firstName"
+          class="form-control"
+          placeholder="First Name"
+          formControlName="firstName"
+          [ngClass]="{
+            'is-invalid':
+              firstName?.invalid && (firstName?.dirty || firstName?.touched),
+            'is-valid':
+              firstName?.valid && (firstName?.dirty || firstName?.touched)
+          }"
+        />
+        <small
+          class="text-danger"
+          *ngIf="firstName?.invalid &&(firstName?.dirty ||firstName?.touched)&&
+          firstName?.errors?.['required']
+        "
+          >Field is Required</small
+        >
+      </div>
+      <div class="col pe-0">
+        <input
+          type="text"
+          name="lastName"
+          class="form-control"
+          placeholder="Last Name"
+          formControlName="lastName"
+          [ngClass]="{
+            'is-invalid':
+              lastName?.invalid && (lastName?.dirty || lastName?.touched),
+            'is-valid':
+              lastName?.valid && (lastName?.dirty || lastName?.touched)
+          }"
+        />
+        <!-- We can use safe validator (?) or we can also use assertion operator(!) both -->
+        <small
+          class="text-danger"
+          *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)
+          && lastName?.errors?.['required']
+          "
+          >Field is Required</small
+        >
+      </div>
+    </div>
+    <div class="form-group row mb-4">
+      <input
+        type="email"
+        name="email"
+        class="form-control"
+        placeholder="E-mail"
+        formControlName="email"
+        [ngClass]="{
+          'is-invalid': email?.invalid && (email?.dirty || email?.touched),
+          'is.valid': email?.valid && (email?.dirty || email?.touched)
+        }"
+      />
+      <small
+        class="text-danger"
+        *ngIf="email?.invalid && (email?.dirty || email?.touched)
+        && email?.errors?.['required']
+      "
+        >Field is Required</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="email?.invalid && (email?.dirty || email?.touched)
+      && email?.errors?.['email']
+    "
+        >Invalid email</small
+      >
+    </div>
+    <div class="form-group row mb-4">
+      <input
+        type="text"
+        name="mobileNumber"
+        class="form-control"
+        placeholder="Mobile Number"
+        formControlName="mobileNumber"
+        [ngClass]="{
+          'is-invalid':
+            mobileNumber?.invalid &&
+            (mobileNumber?.dirty || mobileNumber?.touched),
+          'is-valid':
+            mobileNumber?.valid &&
+            (mobileNumber?.dirty || mobileNumber?.touched)
+        }"
+      />
+      <small
+        class="text-danger"
+        *ngIf="mobileNumber?.invalid &&(mobileNumber?.dirty || mobileNumber?.touched) &&
+         mobileNumber?.errors?.['required']"
+        >Field is Required</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="mobileNumber?.invalid &&(mobileNumber?.dirty || mobileNumber?.touched) &&
+         mobileNumber?.errors?.['pattern']"
+        >Mobile number should start with 7,8 or 9 with length 10</small
+      >
+    </div>
+    <div class="form-group row mb-4">
+      <input
+        type="date"
+        name="dateOfBirth"
+        class="form-control"
+        formControlName="dateOfBirth"
+        [ngClass]="{
+          'is-invalid':
+            dateOfBirth?.invalid &&
+            (dateOfBirth?.dirty || dateOfBirth?.touched),
+          'is-valid':
+            dateOfBirth?.valid && (dateOfBirth?.dirty || dateOfBirth?.touched)
+        }"
+      />
+      <small
+        class="text-danger"
+        *ngIf="dateOfBirth?.invalid && (dateOfBirth?.dirty || dateOfBirth?.touched)&&
+      dateOfBirth?.errors?.['required']
+      "
+        >Field is Required</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="dateOfBirth?.invalid && (dateOfBirth?.dirty || dateOfBirth?.touched)&&
+       dateOfBirth?.errors?.['minAge']
+       "
+        >Age must be 18</small
+      >
+    </div>
+    <div class="form-group row mb-4">
+      <input
+        type="password"
+        name="password"
+        class="form-control"
+        placeholder="Password"
+        formControlName="password"
+        [ngClass]="{
+          'is-invalid':
+            password?.invalid && (password?.dirty || password?.touched),
+          'is-valid': password?.valid && (password?.dirty || password?.touched)
+        }"
+      />
+      <small
+        class="text-danger"
+        *ngIf="password?.invalid &&(password?.dirty || password?.touched) &&
+      password?.errors?.['required']
+      "
+        >Field is required</small
+      >
+    </div>
+    <div class="form-group row mb-4">
+      <input
+        type="password"
+        name="confirmPassword"
+        class="form-control"
+        placeholder="Confirm Password"
+        formControlName="confirmPassword"
+        [ngClass]="{
+          'is-invalid':
+            confirmPassword?.invalid &&
+            (confirmPassword?.dirty || confirmPassword?.touched),
+          'is-valid':
+            confirmPassword?.valid &&
+            (confirmPassword?.dirty || confirmPassword?.touched)
+        }"
+      />
+      <small
+        class="text-danger"
+        *ngIf="confirmPassword?.invalid &&(confirmPassword?.dirty || confirmPassword?.touched) &&
+      confirmPassword?.errors?.['required']
+      "
+        >Field is required</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="confirmPassword?.invalid &&(confirmPassword?.dirty || confirmPassword?.touched) &&
+      confirmPassword?.errors?.['compareValidator']
+      "
+        >Password and Confirm Password do not match</small
+      >
+    </div>
+    <div class="form-group row mb-4">
+      <div class="col-4">
+        <label>Gender</label>
+      </div>
+      <div class="col-3">
+        <input
+          class="form-check-input"
+          type="radio"
+          id="male"
+          name="gender"
+          value="male"
+          formControlName="gender"
+        />
+        <label class="form-check-label ms-1" for="male">Male</label>
+      </div>
+      <div class="col-3">
+        <input
+          class="form-check-input"
+          type="radio"
+          id="female"
+          name="gender"
+          value="female"
+          formControlName="gender"
+        />
+        <label class="form-check-label ms-1" for="female">Female</label>
+      </div>
+    </div>
+
+    <div class="form-group row mb-4">
+      <select
+        name="countries"
+        id="country"
+        class="form-select"
+        formControlName="countryID"
+        [ngClass]="{
+          'is-invalid':
+            countryID?.invalid && (countryID?.dirty || countryID?.touched),
+          'is-valid':
+            countryID?.valid && (countryID?.dirty || countryID?.touched)
+        }"
+      >
+        <option selected value="null">Select Country</option>
+        <option *ngFor="let country of countries" [value]="country.countryID">
+          {{ country.countryName }}
+        </option>
+      </select>
+    </div>
+    <div class="form-group row">
+      <div class="col-1 ps-0">Skills</div>
+      <div class="col-md-11" formArrayName="skills">
+        <div
+          class="row mb-2 g-2"
+          *ngFor="let skill of skills.controls; let i = index"
+          [formGroupName]="i"
+        >
+          <div class="col-5">
+            <input
+              type="text"
+              name="skillName"
+              class="form-control"
+              formControlName="skillName"
+              placeholder="Skill Name"
+              [ngClass]="{
+                'is-invalid':
+                  skill.get('skillName')?.invalid &&
+                  (skill.get('skillName')?.dirty ||
+                    skill.get('skillName')?.touched),
+
+                'is-valid':
+                  skill.get('skillName')?.valid &&
+                  (skill.get('skillName')?.dirty ||
+                    skill.get('skillName')?.touched)
+              }"
+            />
+            <small
+              class="text-danger"
+              *ngIf="
+                skill.get('skillName')?.invalid &&
+                (skill.get('skillName')?.dirty ||
+                  skill.get('skillName')?.touched) &&
+                  skill.get('skillName')?.errors?.['required']
+              "
+              >Field is required</small
+            >
+          </div>
+          <div class="col-4">
+            <select
+              name="skillLevel"
+              id="skillLevel"
+              class="form-select"
+              formControlName="skillLevel"
+              [ngClass]="{
+                'is-invalid':
+                  skill.get('skillLevel')?.invalid &&
+                  (skill.get('skillLevel')?.dirty ||
+                    skill.get('skillLevel')?.touched),
+
+                'is-valid':
+                  skill.get('skillLevel')?.valid &&
+                  (skill.get('skillLevel')?.dirty ||
+                    skill.get('skillLevel')?.touched)
+              }"
+            >
+              <option selected value="null">Level</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Professional">Professional</option>
+              <option value="Expert">Expert</option>
+            </select>
+            <small
+              class="text-danger"
+              *ngIf="
+                skill.get('skillLevel')?.invalid &&
+                (skill.get('skillLevel')?.dirty ||
+                  skill.get('skillLevel')?.touched)&&
+                  skill.get('skillLevel')?.errors?.['required']
+              "
+              >Field is Required</small
+            >
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-danger" (click)="onRemoveSkill(i)">
+              Remove
+            </button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-md mb-4" (click)="onAddSkill()">
+          Add skills
+        </button>
+      </div>
+    </div>
+
+    <div class="form-check row">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        value="true"
+        id="letters"
+        formControlName="receiveNewsLetters"
+      />
+      <label class="form-check-label" for="letters">
+        Receive News Letters
+      </label>
+    </div>
+    <div class="d-grid">
+      <button
+        type="submit"
+        class="btn btn-info btn-lg my-4 text-white text-uppercase shadow"
+        block="true"
+        [disabled]="signupForm.invalid && (signupForm.dirty|| signupForm.touched)"
+      >
+        Sign Up
+      </button>
+    </div>
+    <div class="text-center">
+      <p>
+        Already member
+        <a
+          class="text-decoration-none hand-icon"
+          onclick="return false"
+          (click)="login()"
+        >
+          Login</a
+        >
+      </p>
+    </div>
+  </form>
+  <!-- {{signupForm.value|json}} -->
+</div>

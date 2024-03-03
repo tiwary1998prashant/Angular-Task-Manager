@@ -1,0 +1,667 @@
+<div class="row">
+  <div class="col-md-2 mt-3">
+    <button class="btn btn-primary" (click)="onProjectCreate(newProjectModal)">
+      Create Project
+    </button>
+  </div>
+  <div class="col-md-2 mt-3 pt-1">
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="hideToggle"
+        value="false"
+        [(ngModel)]="hideDetails"
+        (change)="onHideShowChange()"
+      />
+      <label class="form-check-label" for="hideToggle"
+        >Hide/Show Projects</label
+      >
+    </div>
+  </div>
+  <div class="col-md-2 mt-3 pt-1">
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="selectAllToggle"
+        (change)="onSelectClcik()"
+      />
+      <label class="form-check-label" for="selectAllToggle">Sellect All</label>
+    </div>
+  </div>
+  <div class="col-md-6 mt-3">
+    <div class="row">
+      <div class="col-md-5">
+        <select
+          name="searchBy"
+          id="searchBy"
+          class="form-select"
+          [(ngModel)]="searchBy"
+        >
+          <option value="projectID">Project ID</option>
+          <option value="projectName">Project Name</option>
+          <option value="dateOfStart">Date of Statrt</option>
+          <option value="teamSize">Team Size</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <input
+          type="text"
+          id="searchText"
+          name="searchText"
+          class="form-control"
+          placeholder="Search..."
+          [(ngModel)]="searchText"
+          (keyup)="onSearchTextKeyup($event)"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- main content -->
+<div class="row my-2">
+  <div
+    class="col-md-4"
+    *ngFor="
+      let project of projects
+        | filter : searchBy : searchText
+        | paging : currentPageIndex : pageSize;
+      let i = index
+    "
+  >
+    <app-project
+      [currentProject]="project"
+      [recordIndex]="i"
+      (onEditClick)="onEditClicked(editProjectModal, i)"
+      (onDeleteClcik)="onDeleteClicked(deleteProjectModal, i)"
+      #prj
+    >
+      <app-checkbox-printer #isChecked></app-checkbox-printer>
+    </app-project>
+  </div>
+</div>
+<div class="row my-2">
+  <div class="col-12">
+    <ul class="pagination justify-content-center mt-1">
+      <li
+        class="page-item"
+        *ngFor="let page of pages"
+        (click)="onPageIndexClicked(page.pageIndex)"
+        [ngClass]="{ active: page.pageIndex == currentPageIndex }"
+      >
+        <a href="#" onclick="return false" class="page-link">
+          {{ page.pageIndex + 1 }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Create Project -->
+<ng-template #newProjectModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">NewProject</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      #newForm="ngForm"
+      appClientLocationStatusValidator
+      novalidate="novalidate"
+    >
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="newProjectID">Project ID</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="newProjectID"
+            name="newProjectID"
+            class="form-control"
+            [(ngModel)]="newProject.projectID"
+            pattern="^[0-9]*$"
+            required="required"
+            #projectID="ngModel"
+            appProjectIduniqueValidator
+            [ngClass]="{
+              'is-invalid':
+                projectID.invalid && (projectID.dirty || projectID.touched),
+              'is-valid':
+                projectID.valid && (projectID.dirty || projectID.touched)
+            }"
+          />
+          <small
+            class="text-danger"
+            *ngIf="projectID.invalid && (projectID.dirty || projectID.touched)&&
+            projectID.errors?.['required']
+            "
+            >Field is required</small
+          >
+          <small
+            class="text-danger"
+            *ngIf="projectID.invalid && (projectID.dirty || projectID.touched)&&
+            projectID.errors?.['pattern']
+            "
+            >Project Id should be digit only</small
+          >
+          <small
+            class="text-danger"
+            *ngIf="projectID.invalid && (projectID.dirty || projectID.touched)&&
+            projectID.errors?.['uniqueProjectID']
+            "
+            >Project ID already exist</small
+          >
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="newProjectName">Project Name</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="newProjectName"
+            name="newProjectName"
+            class="form-control"
+            [(ngModel)]="newProject.projectName"
+            required="required"
+            #projectName="ngModel"
+            [ngClass]="{
+              'is-invalid':
+                projectName.invalid &&
+                (projectName.dirty || projectName.touched),
+              'is-valid':
+                projectName.valid && (projectName.dirty || projectName.touched)
+            }"
+          />
+          <small
+            class="text-danger"
+            *ngIf="
+              projectName.invalid && (projectName.dirty || projectName.touched)&&
+              projectName.errors?.['required']
+            "
+            >Field is required</small
+          >
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="newDateOfStart">Date Of Start</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="date"
+            id="newDateOfStart"
+            name="newDateOfStart"
+            class="form-control"
+            [(ngModel)]="newProject.dateOfStart"
+            required="required"
+            #dos="ngModel"
+            [ngClass]="{
+              'is-invalid': dos.invalid && (dos.dirty || dos.touched),
+              'is-valid': dos.valid && (dos.dirty || dos.touched)
+            }"
+          />
+          <small
+            class="text-danger"
+            *ngIf="dos.invalid && (dos.dirty || dos.touched)&&
+          dos.errors?.['required']
+          "
+            >Field is required</small
+          >
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="newTeamSize">Team Size</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="newTeamSize"
+            name="newTeamSize"
+            class="form-control"
+            [(ngModel)]="newProject.teamSize"
+            required="required"
+            [appTeamSizeValidator]="5"
+            #teamSize="ngModel"
+            [ngClass]="{
+              'is-invalid':
+                teamSize.invalid && (teamSize.dirty || teamSize.touched),
+              'is-valid': teamSize.valid && (teamSize.dirty || teamSize.touched)
+            }"
+          />
+          <small
+            class="text-danger"
+            *ngIf="teamSize.invalid &&(teamSize.dirty||teamSize.touched)&&
+          teamSize.errors?.['required']
+          "
+            >Field is required</small
+          >
+          <small
+            class="text-danger"
+            *ngIf="teamSize.invalid &&(teamSize.dirty||teamSize.touched)&&
+          teamSize.errors?.['divisible']
+          "
+            >Team size should be divisible by 5</small
+          >
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-6">
+          <label class="form-check-label" for="checkNewActive"> Active </label>
+        </div>
+        <div class="col-sm-6">
+          <input
+            type="checkbox"
+            value="true"
+            id="chkNewActive"
+            name="chkNewActive"
+            class="form-check-input"
+            [(ngModel)]="newProject.active"
+          />
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4"><label>Status</label></div>
+        <div class="col-sm-8">
+          <div class="row">
+            <div class="col-sm-6">
+              <input
+                type="radio"
+                id="newProjectStatus"
+                name="newProjectStatus"
+                value="Support"
+                class="form-check-input"
+                [(ngModel)]="newProject.status"
+                required="required"
+              />
+              <label class="form-check-label ms-2" for="newProjectStatus">
+                Support
+              </label>
+            </div>
+            <div class="col-sm-6">
+              <input
+                type="radio"
+                id="newProjectStatus"
+                name="newProjectStatus"
+                value="In Force"
+                class="form-check-input"
+                [(ngModel)]="newProject.status"
+                required="required"
+              />
+
+              <label class="form-check-label ms-2" for="newProjectStatus">
+                In Force
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="newClientLocation">Client Location</label>
+        </div>
+        <div class="col-sm-8">
+          <select
+            name="newClientLocation"
+            id="newClientLocation"
+            class="form-select"
+            [(ngModel)]="newProject.clientLocationID"
+            required="required"
+            #clientLocation="ngModel"
+          >
+            <option value="null" selected>--------------</option>
+            <option
+              *ngFor="let clientLocation of clientLocations"
+              [value]="clientLocation.clientLocationID"
+            >
+              {{ clientLocation.clientLocationName }}
+            </option>
+          </select>
+          <small
+            class="text-danger"
+            *ngIf="
+              clientLocation.invalid &&
+              (clientLocation.dirty || clientLocation.touched) &&
+              clientLocation.errors?.['required']
+            "
+            >Field is required</small
+          >
+          <small
+            class="text-danger"
+            *ngIf="
+              newForm.invalid &&
+              (newForm.dirty || newForm.touched) &&
+              newForm.errors?.['clientLocationStatus']
+            "
+            >Support service is not available for this location</small
+          >
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.close('Cancel click')"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-info"
+      (click)="modal.close('Save click')"
+      (click)="onSaveClick()"
+      [disabled]="newForm.invalid"
+    >
+      Save
+    </button>
+  </div>
+</ng-template>
+
+<!-- Edit Project -->
+
+<ng-template #editProjectModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Edit Project</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      #editForm="ngForm"
+      appClientLocationStatusValidator
+      novalidate="novalidate"
+    >
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label
+            for="
+          editProjectID"
+            >Project ID</label
+          >
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="editProjectID"
+            name="editProjectID"
+            class="form-control"
+            [(ngModel)]="editProject.projectID"
+            required="required"
+            disabled="disabled"
+          />
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="editProjectName">Project Name</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="editProjectName"
+            name="editProjectName"
+            class="form-control"
+            [(ngModel)]="editProject.projectName"
+            required="required"
+            #editProjectName="ngModel"
+            [ngClass]="{
+              'is-invalid':
+                editProjectName.invalid &&
+                (editProjectName.dirty || editProjectName.touched),
+              'is-valid':
+                editProjectName.valid &&
+                (editProjectName.dirty || editProjectName.touched)
+            }"
+          />
+          <small
+            class="text-danger"
+            *ngIf="editProjectName.invalid &&(editProjectName.dirty || editProjectName.touched)&&
+            editProjectName.errors?.['required']"
+            >Field is Required</small
+          >
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="editDateOfStart">Date Of Start</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="date"
+            id="editDateOfStart"
+            name="editDateOfStart"
+            class="form-control"
+            [(ngModel)]="editProject.dateOfStart"
+            required="required"
+            #editDob="ngModel"
+            [ngClass]="{
+              'is-invalid':
+                editDob.invalid && (editDob.dirty || editDob.touched),
+              'is-valid': editDob.valid && (editDob.dirty || editDob.touched)
+            }"
+          />
+          <small
+            class="text-danger"
+            *ngIf=" editDob.invalid && (editDob.dirty || editDob.touched)&&
+          editDob.errors?.['required']
+          "
+            >Field is required</small
+          >
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="editTeamSize">Team Size</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="editTeamSize"
+            name="editTeamSize"
+            class="form-control"
+            [(ngModel)]="editProject.teamSize"
+            required="required"
+          />
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-6">
+          <label class="form-check-label" for="checkEditActive"> Active </label>
+        </div>
+        <div class="col-sm-6">
+          <input
+            type="checkbox"
+            value="true"
+            id="checkEditActive"
+            name="checkEditActive"
+            class="form-check-input"
+            [(ngModel)]="editProject.active"
+          />
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4"><label>Status</label></div>
+        <div class="col-sm-8">
+          <div class="row">
+            <div class="col-sm-6">
+              <input
+                type="radio"
+                id="editProjectStatus"
+                name="editProjectStatus"
+                value="Support"
+                class="form-check-input"
+                [(ngModel)]="editProject.status"
+              />
+              <label class="form-check-label ms-2" for="editProjectStatus">
+                Support
+              </label>
+            </div>
+            <div class="col-sm-6">
+              <input
+                type="radio"
+                id="editProjectStatus"
+                name="editProjectStatus"
+                value="In Force"
+                class="form-check-input"
+                [(ngModel)]="editProject.status"
+              />
+              <label class="form-check-label ms-2" for="editProjectStatus">
+                In Force
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="editClientLocation">Client Location</label>
+        </div>
+        <div class="col-sm-8">
+          <select
+            name="editClientLocation"
+            id="editClientLocation"
+            class="form-select"
+            [(ngModel)]="editProject.clientLocationID"
+            required="required"
+            #editClientLocation="ngModel"
+            [ngClass]="{
+              'is-invalid':
+                editClientLocation.invalid &&
+                (editClientLocation.dirty || editClientLocation.touched),
+              'is-valid':
+                editClientLocation.valid &&
+                (editClientLocation.dirty || editClientLocation.touched)
+            }"
+          >
+            <option value="null" selected>--------------</option>
+            <option
+              *ngFor="let clientLocation of clientLocations"
+              [value]="clientLocation.clientLocationID"
+            >
+              {{ clientLocation.clientLocationName }}
+            </option>
+          </select>
+          <small
+            class="text-danger"
+            *ngIf="editClientLocation.invalid &&
+          (editClientLocation.dirty || editClientLocation.touched) && editClientLocation.errors?.['required']"
+            >Field is required</small
+          >
+          <small
+            class="text-danger"
+            *ngIf="
+            editForm.invalid &&
+            (editForm.dirty || editForm.touched) &&
+            editForm.errors?.['clientLocationStatus']
+          "
+            >Support service is not available for this location</small
+          >
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.close('Cancel click')"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Save click')"
+      (click)="onUpdateClick()"
+      [disabled]="editForm.invalid"
+    >
+      Update
+    </button>
+  </div>
+</ng-template>
+
+<!-- Delete Project -->
+
+<ng-template #deleteProjectModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Delete Project</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label
+            for="
+          deleteProjectID"
+            >Project ID</label
+          >
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="deleteProjectID"
+            name="deleteProjectID"
+            class="form-control"
+            [(ngModel)]="deleteProject.projectID"
+            required="required"
+            disabled="disabled"
+          />
+        </div>
+      </div>
+      <div class="form-group row mb-2">
+        <div class="col-sm-4">
+          <label for="deleteProjectName">Project Name</label>
+        </div>
+        <div class="col-sm-8">
+          <input
+            type="text"
+            id="deleteProjectName"
+            name="deleteProjectName"
+            class="form-control"
+            [(ngModel)]="deleteProject.projectName"
+            disabled="disabled"
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.close('Cancel click')"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Confirm click')"
+      (click)="onDeleteConfirm()"
+    >
+      Confirm
+    </button>
+  </div>
+</ng-template>
